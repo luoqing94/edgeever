@@ -1,0 +1,41 @@
+name: Deploy EdgeOne proxy
+on:
+  push:
+    branches: [custom/live]
+    paths:
+      - 'edgeone-proxy/**'
+      - '.github/workflows/edgeever-proxy-deploy.yml'
+  workflow_dispatch:
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install EdgeOne CLI
+        run: npm i -g edgeone@latest
+      - name: Inject Teo verification (deploy-time only)
+        working-directory: edgeone-proxy
+        env:
+          TEO_8Z: ${{ secrets.TEO_8Z }}
+          TEO_5W: ${{ secrets.TEO_5W }}
+        run: |
+          set -euo pipefail
+          rm -f edge-functions/.well-known/teo-verification/*.js 2>/dev/null || true
+          mkdir -p public/.well-known/teo-verification .well-known/teo-verification
+          if [ -n "${TEO_8Z:-}" ]; then
+            printf '%s' "$TEO_8Z" > public/.well-known/teo-verification/8zmywxm3bk.txt
+            cp public/.well-known/teo-verification/8zmywxm3bk.txt .well-known/teo-verification/
+          fi
+          if [ -n "${TEO_5W:-}" ]; then
+            printf '%s' "$TEO_5W" > public/.well-known/teo-verification/5wdeolbm95.txt
+            cp public/.well-known/teo-verification/5wdeolbm95.txt .well-known/teo-verification/
+          fi
+      - name: Deploy
+        working-directory: edgeone-proxy
+        env:
+          EDGEONE_API_TOKEN: ${{ secrets.EDGEONE_API_TOKEN }}
+          EDGEONE_PROJECT: ${{ vars.EDGEONE_PROJECT }}
+        run: edgeone makers deploy . -n "$EDGEONE_PROJECT" -t "$EDGEONE_API_TOKEN" -e production
