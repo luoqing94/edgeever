@@ -1,4 +1,4 @@
-const ORIGIN_HOST = 'edgeever.lq280657463.workers.dev';
+const ORIGIN_HOST = 'CHANGE_ME.workers.dev';
 const ORIGIN = `https://${ORIGIN_HOST}`;
 
 const HOP = new Set([
@@ -10,8 +10,8 @@ export default async function onRequest(context) {
   const { request } = context;
   const path = new URL(request.url).pathname;
   const verifies = {
-    '/.well-known/teo-verification/8zmywxm3bk.txt': '06sr4pz7rbmbccpk8p78mbhgrgwmkxvs',
-    '/.well-known/teo-verification/5wdeolbm95.txt': 'sn8g1or0mzp97er9pujkyxpmz4cinth2',
+    '/.well-known/teo-verification/8zmywxm3bk.txt': 'CHANGE_ME_TEO_VERIFICATION',
+    '/.well-known/teo-verification/5wdeolbm95.txt': 'CHANGE_ME_TEO_VERIFICATION',
   };
   if (verifies[path]) {
     return new Response(verifies[path], {
