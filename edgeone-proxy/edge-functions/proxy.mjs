@@ -1,17 +1,24 @@
-const ORIGIN_HOST = 'CHANGE_ME.workers.dev';
-const ORIGIN = `https://${ORIGIN_HOST}`;
-
 const HOP = new Set([
   'connection', 'keep-alive', 'proxy-authenticate', 'proxy-authorization',
   'te', 'trailers', 'transfer-encoding', 'upgrade', 'host', 'content-length',
 ]);
 
+function readEnv(context, name) {
+  return context?.env?.[name]
+    || (typeof process !== 'undefined' && process.env?.[name])
+    || '';
+}
+
 export default async function onRequest(context) {
   const { request } = context;
+  const ORIGIN_HOST = readEnv(context, 'ORIGIN_HOST') || 'CHANGE_ME.workers.dev';
+  const ORIGIN = `https://${ORIGIN_HOST}`;
   const path = new URL(request.url).pathname;
   const verifies = {
-    '/.well-known/teo-verification/8zmywxm3bk.txt': 'CHANGE_ME_TEO_VERIFICATION',
-    '/.well-known/teo-verification/5wdeolbm95.txt': 'CHANGE_ME_TEO_VERIFICATION',
+    '/.well-known/teo-verification/8zmywxm3bk.txt':
+      readEnv(context, 'TEO_VERIFICATION_8ZMYWXM3BK') || 'CHANGE_ME_TEO_VERIFICATION',
+    '/.well-known/teo-verification/5wdeolbm95.txt':
+      readEnv(context, 'TEO_VERIFICATION_5WDEOLBM95') || 'CHANGE_ME_TEO_VERIFICATION',
   };
   if (verifies[path]) {
     return new Response(verifies[path], {
