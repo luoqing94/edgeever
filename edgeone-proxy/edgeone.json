@@ -1,0 +1,7 @@
+{
+  "name": "edgeever-proxy",
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "installCommand": "",
+  "nodeVersion": "22"
+}
