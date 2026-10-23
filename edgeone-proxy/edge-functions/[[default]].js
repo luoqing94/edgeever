@@ -35,35 +35,36 @@ const SECONDARY_HTML_PATHS = new Set([
   '/tiptap-ime-test.html',
 ]);
 
-// EE-2: Keep only the lightweight initial bootstrap chunks in <link rel="modulepreload">,
-// stripping the 88+ heavy lazy/editor/diagram/mermaid/pdf/math chunks (~3.74 MB)
-// while keeping <script type="module"> and <link rel="stylesheet"> 100% intact.
-const CORE_PRELOAD_PREFIXES = [
-  'rolldown-runtime-',
-  'modulepreload-polyfill-',
-  'vendor-react-',
-  'vendor-query-',
-  'vendor-i18n-',
-  'vendor-icons-',
-  'vendor-radix-slot-',
-  'vendor-ui-utils-',
-  'vendor-storage-',
-  'ui-button-',
-  'pwa-update-notice-',
-  'app-page-path-',
-  'version-',
-  'client-id-',
-  'api-',
-  'local-db-',
-  'network-status-',
-  'ThemeProvider-',
-  'ThemeToggle-',
-  'editor-body-font-',
-  'editor-body-fonts-',
-  'ui-font-',
-  'renderer-recovery-',
-  'web-',
-];
+// EE-2 (Revised): Flatten the 5-level ES module static import waterfall.
+// Because Rolldown's strictExecutionOrder links all 132 startup chunks into the
+// static `import ... from "./..."` graph of app-BANb6soI.js, the browser cannot
+// execute line 1 of app-BANb6soI.js until all 132 static dependencies finish loading.
+// Keeping all 113 Vite modulepreload links AND supplementing the 19 deep static
+// dependencies omitted by vite.config.ts flattens the 5-RTT sequential discovery
+// waterfall into a single Level-0 parallel preload wave on EdgeOne CDN.
+const SUPPLEMENTAL_STATIC_PRELOADS_FOR_ENTRY = {
+  '/assets/app-BANb6soI.js': [
+    '/assets/ui-button-tooltip-DPT6rCsj.js',
+    '/assets/i18n-ja-JrqWBfr3.js',
+    '/assets/vendor-radix-MV6R9Y55.js',
+    '/assets/vendor-streamdown-DmUo3sTi.js',
+    '/assets/vendor-tiptap-core-D3dqFQSI.js',
+    '/assets/vendor-tiptap-pm-3RDocuL6.js',
+    '/assets/vendor-tiptap-react-UfhmkkOx.js',
+    '/assets/vendor-tiptap-starter-CXisUuVu.js',
+    '/assets/vendor-zod-pjRicxwa.js',
+    '/assets/ui-primitives-ElEZ9lOG.js',
+    '/assets/vendor-code-highlight-eF8Ic3P1.js',
+    '/assets/vendor-codemirror-CebL1c85.js',
+    '/assets/vendor-floating-CUv969WA.js',
+    '/assets/vendor-infographic-B-c8yls1.js',
+    '/assets/vendor-mermaid-render-DIzKsmxo.js',
+    '/assets/vendor-prosemirror-bKIHGkYk.js',
+    '/assets/vendor-tiptap-extensions-Da0eWsl_.js',
+    '/assets/vendor-x6-BeDWnBdi.js',
+    '/assets/vendor-mermaid-d3-CFeYfBqf.js',
+  ],
+};
 
 // EE-3: Synchronous <head> FOUC prevention script matching ThemeProvider.tsx initializeTheme()
 const THEME_INIT_SCRIPT =
@@ -98,21 +99,27 @@ function resolveOrigin(context) {
 export function optimizeSpaHtml(html) {
   if (typeof html !== 'string' || !html) return html;
 
-  // EE-2: Filter <link rel="modulepreload" ...> to core bootstrap chunks only
-  let out = html.replace(
-    /[ \t]*<link\b[^>]*\brel=["']modulepreload["'][^>]*>\r?\n?/gi,
-    (tag) => {
-      const hrefMatch = tag.match(/\bhref=["']\/assets\/([^"'?#]+)["']/i);
-      if (!hrefMatch) return tag;
-      const file = hrefMatch[1];
-      for (let i = 0; i < CORE_PRELOAD_PREFIXES.length; i++) {
-        if (file.startsWith(CORE_PRELOAD_PREFIXES[i])) {
-          return tag;
+  let out = html;
+
+  // EE-2 (Revised): Keep all existing <link rel="modulepreload"> tags intact and
+  // append any missing Level 2..5 static ES module dependencies for the current entry
+  // so the browser discovers all 132 static dependencies in Wave 0 (0 extra RTTs).
+  for (const [entrySrc, extraHrefs] of Object.entries(SUPPLEMENTAL_STATIC_PRELOADS_FOR_ENTRY)) {
+    if (out.includes(`src="${entrySrc}"`) || out.includes(`src='${entrySrc}'`)) {
+      const missingTags = extraHrefs
+        .filter((href) => !out.includes(`href="${href}"`) && !out.includes(`href='${href}'`))
+        .map((href) => `    <link rel="modulepreload" crossorigin href="${href}">`)
+        .join('\n');
+      if (missingTags) {
+        const firstStylesheetIdx = out.indexOf('<link rel="stylesheet"');
+        if (firstStylesheetIdx !== -1) {
+          out = out.slice(0, firstStylesheetIdx) + missingTags + '\n    ' + out.slice(firstStylesheetIdx);
+        } else if (out.includes('</head>')) {
+          out = out.replace('</head>', `${missingTags}\n  </head>`);
         }
       }
-      return '';
     }
-  );
+  }
 
   // EE-3: Inject synchronous FOUC theme script into <head>
   if (!out.includes('id="ee-theme-init"')) {
