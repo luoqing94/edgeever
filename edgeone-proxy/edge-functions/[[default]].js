@@ -349,7 +349,7 @@ async function fetchAndPopulateSwrCache({
       }
 
       headers.delete('set-cookie');
-      stripVaryCookie(headers);
+      headers.delete('vary');
       headers.set('cache-control', 'public, max-age=60');
 
       let bodyBuffer;
@@ -395,6 +395,7 @@ async function fetchAndPopulateSwrCache({
         if (typeof context?.waitUntil === 'function') {
           context.waitUntil(putPromise);
         }
+        await putPromise;
       }
 
       return entry;
