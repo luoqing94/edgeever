@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";var t,n;function r(){return(r=e((()=>{t=/^\[(?:DEV|DEMO|LOCAL|LOCAL DEMO)\]\s*/,n=(e,n)=>n.development?`[${n.profile===`demo`?`DEMO`:`DEV`}] ${e.replace(t,``)}`:e})))()}export{n,r as t};

@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";var t,n,r,i;function a(){return(a=e((()=>{t=`https://demo.edgeever.org`,n=e=>e.trim().replace(/\/+$/,``).replace(/^https?:\/\//i,``).toLowerCase(),r=e=>{let r=e.trim();return r&&(n(r)===`demo`?t:r)},i=e=>{let t=r(e);return t&&(/:\/\//.test(t)?t:`https://${t}`).replace(/\/+$/,``)}})))()}export{r as i,a as n,i as r,t};

@@ -1,0 +1,1 @@
+import{n as e,r as t}from"./rolldown-runtime-C0FnF6B9.js";import{c as n,o as r}from"./diagram-layout-DiCqhy8N.js";var i=t({fitDefaultDiagramLabels:()=>r});function a(){return(a=e((()=>{n()})))()}export{a as n,i as t};

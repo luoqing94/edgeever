@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";var t,n,r,i;function a(){return(a=e((()=>{t=`text-sm font-semibold leading-5 text-slate-900`,n=`inline-flex shrink-0 items-center rounded-full bg-accent px-1.5 text-xs font-normal leading-5 text-slate-600`,r=`300px`,i=`880px`})))()}export{a,t as i,i as n,r,n as t};

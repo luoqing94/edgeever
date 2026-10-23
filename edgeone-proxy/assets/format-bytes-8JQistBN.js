@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";var t;function n(){return(n=e((()=>{t=e=>{if(!Number.isFinite(e)||e<=0)return`0 B`;let t=[`B`,`KB`,`MB`,`GB`,`TB`],n=Math.min(Math.floor(Math.log(e)/Math.log(1024)),t.length-1),r=e/1024**n;return`${n===0?r.toFixed(0):r.toFixed(r>=10?1:2)} ${t[n]}`}})))()}export{n,t};

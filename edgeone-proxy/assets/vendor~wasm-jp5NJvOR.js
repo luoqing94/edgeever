@@ -1,0 +1,1 @@
+import{n as e,r as t}from"./rolldown-runtime-C0FnF6B9.js";import{n,r,t as i}from"./vendor~wasm-CcDzjmNX.js";var a=t({default:()=>i,getWasmInstance:()=>i,wasmBinary:()=>r});function o(){return(o=e((()=>{n()})))()}export{a as n,o as t};

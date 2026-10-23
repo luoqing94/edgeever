@@ -1,0 +1,2 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";import{S as t,g as n,h as r,x as i}from"./vendor-codemirror-CebL1c85.js";var a,o;function s(){return(s=e((()=>{n(),t(),a=(e,t)=>{if(!t.length)return[];let n=typeof e==`string`?i.of(e.split(`
+`)):e,a=new r({search:t,literal:!0,caseSensitive:!1}).getCursor(n),o=[];for(let e=a.next();!e.done;e=a.next())o.push({from:e.value.from,to:e.value.to});return o},o=(e,t,n)=>a(e,t).map(e=>({...e,insert:n}))})))()}export{a as n,s as r,o as t};

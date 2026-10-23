@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";import{t}from"./src-BdLbps5w.js";var n;function r(){return(r=e((()=>{t(),n=e=>{let t=e.match(/^v?(\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?)(?:\+[0-9A-Za-z.-]+)?$/i);return t?`v${t[1]}`:null}})))()}export{r as n,n as t};

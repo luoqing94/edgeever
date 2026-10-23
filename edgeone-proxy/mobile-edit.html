@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>编辑笔记 - EdgeEver</title>
+    <style>#mobile-editor-bootstrap{color:#0f172a;background:#fff;justify-content:center;align-items:center;min-height:100dvh;padding:24px;font-family:system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif;display:flex}.mobile-editor-bootstrap-card{text-align:center;width:min(100%,360px)}.mobile-editor-bootstrap-spinner{border:3px solid #d1fae5;border-top-color:#16a06e;border-radius:999px;width:28px;height:28px;margin:0 auto 16px;animation:.8s linear infinite mobile-editor-bootstrap-spin}.mobile-editor-bootstrap-title{margin:0;font-size:17px;font-weight:700}.mobile-editor-bootstrap-detail{color:#64748b;margin:8px 0 0;font-size:14px;line-height:1.55}.mobile-editor-bootstrap-actions{justify-content:center;gap:10px;margin-top:20px;display:flex}.mobile-editor-bootstrap-action{color:#0f172a;min-height:40px;font:inherit;background:#fff;border:1px solid #cbd5e1;border-radius:9px;padding:8px 16px;font-size:14px;font-weight:700}.mobile-editor-bootstrap-action[data-primary=true]{color:#fff;background:#16a06e;border-color:#16a06e}@keyframes mobile-editor-bootstrap-spin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){.mobile-editor-bootstrap-spinner{animation:none}}@media (prefers-color-scheme:dark){#mobile-editor-bootstrap{color:#f8fafc;background:#19222b}.mobile-editor-bootstrap-detail{color:#94a3b8}.mobile-editor-bootstrap-action{color:#f8fafc;background:#1e293b;border-color:#475569}}</style>
+    <script>
+      (() => {
+        const slowLoadDelayMs = 8000;
+        const english = navigator.language.toLowerCase().startsWith("en");
+        const labels = english
+          ? {
+              loading: "Opening editor…",
+              loadingDetail: "Your note is safe. This may take a moment on a slow connection.",
+              delayed: "The editor is taking longer than expected to open.",
+              failed: "The editor could not start.",
+              failedDetail: "Check your connection, then retry or return to the note list.",
+              back: "Back",
+              retry: "Retry",
+            }
+          : {
+              loading: "正在打开编辑器…",
+              loadingDetail: "笔记内容是安全的，网络较慢时可能需要稍等片刻。",
+              delayed: "编辑器启动时间较长，请检查网络连接。",
+              failed: "编辑器未能启动",
+              failedDetail: "请检查网络后重试，或先返回笔记列表。",
+              back: "返回",
+              retry: "重试",
+            };
+        let mounted = false;
+        let slowLoadTimer = 0;
+
+        const getElement = (id) => document.getElementById(id);
+        const setBootstrapCopy = (title, detail, state) => {
+          if (mounted) return;
+          const bootstrap = getElement("mobile-editor-bootstrap");
+          const titleElement = getElement("mobile-editor-bootstrap-title");
+          const detailElement = getElement("mobile-editor-bootstrap-detail");
+          const retryButton = getElement("mobile-editor-bootstrap-retry");
+          if (!bootstrap || !titleElement || !detailElement || !retryButton) return;
+          bootstrap.dataset.state = state;
+          titleElement.textContent = title;
+          detailElement.textContent = detail;
+          retryButton.hidden = state === "loading";
+        };
+        const showFailure = () => setBootstrapCopy(labels.failed, labels.failedDetail, "error");
+        const onWindowError = (event) => {
+          const target = event.target;
+          const failedCriticalResource = target instanceof HTMLScriptElement
+            || (target instanceof HTMLLinkElement && (target.rel === "stylesheet" || target.rel === "modulepreload"));
+          if (target === window || failedCriticalResource) showFailure();
+        };
+        const onUnhandledRejection = () => showFailure();
+        const returnToPreviousPage = () => {
+          if (history.length > 1) {
+            history.back();
+            return;
+          }
+          const params = new URLSearchParams(location.hash.slice(1));
+          const returnTo = params.get("returnTo");
+          location.replace(returnTo && returnTo.startsWith("/") ? returnTo : "/");
+        };
+        const bindBootstrap = () => {
+          setBootstrapCopy(labels.loading, labels.loadingDetail, "loading");
+          const backButton = getElement("mobile-editor-bootstrap-back");
+          const retryButton = getElement("mobile-editor-bootstrap-retry");
+          if (backButton) {
+            backButton.textContent = labels.back;
+            backButton.addEventListener("click", returnToPreviousPage);
+          }
+          if (retryButton) {
+            retryButton.textContent = labels.retry;
+            retryButton.addEventListener("click", () => location.reload());
+          }
+        };
+
+        window.edgeeverMobileEditorBootstrap = {
+          markMounted() {
+            mounted = true;
+            window.clearTimeout(slowLoadTimer);
+            window.removeEventListener("error", onWindowError, true);
+            window.removeEventListener("unhandledrejection", onUnhandledRejection);
+          },
+          showFailure,
+        };
+        window.addEventListener("error", onWindowError, true);
+        window.addEventListener("unhandledrejection", onUnhandledRejection);
+        document.addEventListener("DOMContentLoaded", bindBootstrap, { once: true });
+        slowLoadTimer = window.setTimeout(() => {
+          setBootstrapCopy(labels.delayed, labels.loadingDetail, "delayed");
+        }, slowLoadDelayMs);
+      })();
+    </script>
+    <script type="module" crossorigin src="/assets/mobile-edit-DyD4Ap6y.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/rolldown-runtime-C0FnF6B9.js">
+    <link rel="modulepreload" crossorigin href="/assets/modulepreload-polyfill-DTxV-GWz.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-react-FkrQ505E.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-query-peIn-gml.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~app~mobile-edit-Cuq9T-52.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-i18n-CVJwtjYC.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-icons-Ci4yjjtu.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~app~mobile-edit~note-print~tiptap-ime-test~WorkspaceApp~companion-actions~desktop-re~c8r2u5pz-C_YFjxr9.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~app~mobile-edit~note-print~WorkspaceApp~companion-actions~desktop-repository~Executi~f8r92epr-wcGF3hrP.js">
+    <link rel="modulepreload" crossorigin href="/assets/public-demo-DoZs6fyU.js">
+    <link rel="modulepreload" crossorigin href="/assets/ai-direct-stream-IOy4rHfZ.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-radix-slot-B_lyAXIB.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-ui-utils-C7puCzni.js">
+    <link rel="modulepreload" crossorigin href="/assets/ui-button-UC0v93i7.js">
+    <link rel="modulepreload" crossorigin href="/assets/version-BhfYeQJs.js">
+    <link rel="modulepreload" crossorigin href="/assets/client-id-DFAE3y16.js">
+    <link rel="modulepreload" crossorigin href="/assets/api-Cj5v0WlV.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-storage-C_B9lbV4.js">
+    <link rel="modulepreload" crossorigin href="/assets/local-db-f_Ww1HD-.js">
+    <link rel="modulepreload" crossorigin href="/assets/notebooks-CG2Iy-OY.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~app~mobile-edit~note-print~WorkspaceApp~companion-actions~diagram-layout~desktop-rep~n2w2z1dc-Dh567Xl7.js">
+    <link rel="modulepreload" crossorigin href="/assets/diagram-mindmap-style-CM415T72.js">
+    <link rel="modulepreload" crossorigin href="/assets/network-status-Par1-H1k.js">
+    <link rel="modulepreload" crossorigin href="/assets/local-resource-cache-CZE7I4K2.js">
+    <link rel="modulepreload" crossorigin href="/assets/notebook-delete-BjvJwiWH.js">
+    <link rel="modulepreload" crossorigin href="/assets/local-mirror-D2AIy1F-.js">
+    <link rel="modulepreload" crossorigin href="/assets/ClipboardCopyNotice-DwY31u9P.js">
+    <link rel="modulepreload" crossorigin href="/assets/version-check-qUYn5piv.js">
+    <link rel="modulepreload" crossorigin href="/assets/pwa-update-notice-DFfD2H-X.js">
+    <link rel="modulepreload" crossorigin href="/assets/useDeployedUpdateNotice-CiF5fwcY.js">
+    <link rel="modulepreload" crossorigin href="/assets/clipboard-CaRTOc5g.js">
+    <link rel="modulepreload" crossorigin href="/assets/SystemInfoCard-Ce5ixiX1.js">
+    <link rel="modulepreload" crossorigin href="/assets/desktop-resources-Ct7uSvpD.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~mobile-edit~PublicSharePage~PublicNotebookSharePage~EditorPane~AssetsPane-BLSRHTcd.js">
+    <link rel="modulepreload" crossorigin href="/assets/PdfViewer-DT0gsv-p.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~mobile-edit~PublicSharePage~PublicNotebookSharePage~EditorPane-BQ7H02SW.js">
+    <link rel="modulepreload" crossorigin href="/assets/mathematics-3G1DEqlF.js">
+    <link rel="modulepreload" crossorigin href="/assets/memo-safety-DZ1iUa9b.js">
+    <link rel="modulepreload" crossorigin href="/assets/css-sandbox-vE0qER45.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~WorkspaceApp~motion-features~TableEditorPane~SettingsPane~PosterEditorPane~PluginMar~b1ahy2va-C9zi1VDN.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~WorkspaceApp~TableEditorPane~SettingsPane~PosterEditorPane~PluginMarketplacePane~Not~ht7nzc02-BN2fwgul.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~WorkspaceApp~motion-features~TableEditorPane~PosterEditorPane~InfographicEditorPane~~mt7kn6eb-DFGnqCoe.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~motion-features~TableEditorPane~PosterEditorPane~InfographicEditorPane~EditorPane~Di~e96euzgv-DBDHcCIh.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~WorkspaceApp-CtgzzSi7.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~motion-features-BysWk5Mk.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~TableEditorPane~PosterEditorPane~InfographicEditorPane~EditorPane~DiagramEditorPane-B8miifE1.js">
+    <link rel="modulepreload" crossorigin href="/assets/AgentLogo-DlQdDEIs.js">
+    <link rel="modulepreload" crossorigin href="/assets/motion-BUVzYsSa.js">
+    <link rel="modulepreload" crossorigin href="/assets/app-page-path-CDGiTBIb.js">
+    <link rel="modulepreload" crossorigin href="/assets/mobile-editor-C83TZ28R.js">
+    <link rel="modulepreload" crossorigin href="/assets/useWorkspaceRoute-Da_poU7J.js">
+    <link rel="modulepreload" crossorigin href="/assets/ThemeProvider-C_2oviKv.js">
+    <link rel="modulepreload" crossorigin href="/assets/ThemeToggle-CFm3VbZD.js">
+    <link rel="modulepreload" crossorigin href="/assets/attachment-resource-menu-C9_E9Cmb.js">
+    <link rel="modulepreload" crossorigin href="/assets/EditorPaneChrome-CpEO9lu0.js">
+    <link rel="modulepreload" crossorigin href="/assets/emergency-draft-CFb6oV-p.js">
+    <link rel="modulepreload" crossorigin href="/assets/sync-events-CaC09xrr.js">
+    <link rel="modulepreload" crossorigin href="/assets/desktop-sync-CU6lTxTg.js">
+    <link rel="modulepreload" crossorigin href="/assets/infographic-syntax-DnspwTxv.js">
+    <link rel="modulepreload" crossorigin href="/assets/diagram-reader-BDE5CyvR.js">
+    <link rel="modulepreload" crossorigin href="/assets/font-loader-BcxA62_Q.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~mobile-edit~tiptap-ime-test~EditorPane-Ck2oQUb3.js">
+    <link rel="modulepreload" crossorigin href="/assets/ThemeBlock-BzrjgmVF.js">
+    <link rel="modulepreload" crossorigin href="/assets/app-helpers-CePlexUt.js">
+    <link rel="modulepreload" crossorigin href="/assets/image-compression-Bh_tnLo6.js">
+    <link rel="modulepreload" crossorigin href="/assets/sync-queue-17emzzmg.js">
+    <link rel="modulepreload" crossorigin href="/assets/editor-shortcuts-Bc2FZcwh.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-beautiful-mermaid-BZkEbNGB.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-beautiful-mermaid-DeoO4YbT.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-beautiful-mermaid-B_ZoDdU_.js">
+    <link rel="modulepreload" crossorigin href="/assets/mermaid-svg-B9iDSCjD.js">
+    <link rel="modulepreload" crossorigin href="/assets/note-print-BlL1N5FM.js">
+    <link rel="modulepreload" crossorigin href="/assets/workspace-ui-BA7cYpV5.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~EditorPane~AssetsPane-DNUS96RK.js">
+    <link rel="modulepreload" crossorigin href="/assets/ConfirmDialogs-GP1k85rU.js">
+    <link rel="modulepreload" crossorigin href="/assets/EditorNoteSearchBar-BGdQaY_R.js">
+    <link rel="modulepreload" crossorigin href="/assets/SharePasswordControls-GwNbR5eq.js">
+    <link rel="modulepreload" crossorigin href="/assets/ShareMemoDialog-CxTwCf8O.js">
+    <link rel="modulepreload" crossorigin href="/assets/EditorTagPicker-D3RfYBvW.js">
+    <link rel="modulepreload" crossorigin href="/assets/ExecutionCenterButton-SUjqG7_D.js">
+    <link rel="modulepreload" crossorigin href="/assets/GitHubRepositoryLink-hfakJ7yI.js">
+    <link rel="modulepreload" crossorigin href="/assets/MemoEditorTopRowLeading-hMl6uk7B.js">
+    <link rel="modulepreload" crossorigin href="/assets/MemoEditorToolbarChrome-B6z5jGix.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~WorkspaceApp~EditorPane-aVCtuaGO.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~WorkspaceApp~TemplatesPane~EvernoteImportGuidePane~EditorPane-Bp7ubzna.js">
+    <link rel="modulepreload" crossorigin href="/assets/note-search-CAc4Rchl.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~PublicSharePage~PublicNotebookSharePage~ImageViewer~EditorPane~AssetsPane-DnvV6exy.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~PublicSharePage~PublicNotebookSharePage~EditorPane-B7WMB3Ep.js">
+    <link rel="modulepreload" crossorigin href="/assets/code-block-CQyikS_V.js">
+    <link rel="modulepreload" crossorigin href="/assets/editor-spellcheck-preference-e0nKWdhq.js">
+    <link rel="modulepreload" crossorigin href="/assets/editor-pane-helpers-DIuJZwA5.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~EditorPane-C1fE-JGd.js">
+    <link rel="modulepreload" crossorigin href="/assets/speech-transcription-error-CI8EfGZu.js">
+    <link rel="modulepreload" crossorigin href="/assets/font-load-state-8Qm-0uXd.js">
+    <link rel="modulepreload" crossorigin href="/assets/FontLabel-DzLlokqB.js">
+    <link rel="modulepreload" crossorigin href="/assets/note-image-font-manifest-B0o6u7ib.js">
+    <link rel="modulepreload" crossorigin href="/assets/staged-resource-repair-DVjvdNeE.js">
+    <link rel="modulepreload" crossorigin href="/assets/ImageViewer-BUzeM9dV.js">
+    <link rel="modulepreload" crossorigin href="/assets/markdown-source-search-yBNfNAL_.js">
+    <link rel="modulepreload" crossorigin href="/assets/EditorPane-Bwjzhmpb.js">
+    <link rel="modulepreload" crossorigin href="/assets/renderer-recovery-Benv8Ior.js">
+    <link rel="modulepreload" crossorigin href="/assets/descendant-notes-preference-DbnVBgcS.js">
+    <link rel="modulepreload" crossorigin href="/assets/PluginPanelDialog-HD7vKHwV.js">
+    <link rel="modulepreload" crossorigin href="/assets/plugin-trust-CqDfiHmn.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor~WorkspaceApp~SettingsPane-DLJ96Pjt.js">
+    <link rel="modulepreload" crossorigin href="/assets/markdown-export-BD_3EUf-.js">
+    <link rel="modulepreload" crossorigin href="/assets/desktop-repository-C-xaTTe9.js">
+    <link rel="modulepreload" crossorigin href="/assets/WorkspaceApp-CoDOjcX-.js">
+    <link rel="modulepreload" crossorigin href="/assets/src-BdLbps5w.js">
+    <link rel="modulepreload" crossorigin href="/assets/editor-body-font-DrvbsP0L.js">
+    <link rel="modulepreload" crossorigin href="/assets/ui-font-DfdqFuHJ.js">
+    <link rel="modulepreload" crossorigin href="/assets/editor-body-fonts-C4kjjFen.js">
+    <link rel="stylesheet" crossorigin href="/assets/vendor-mermaid-render-B-Q3nfDX.css">
+    <link rel="stylesheet" crossorigin href="/assets/vendor~PublicSharePage~PublicNotebookSharePage~ImageViewer~EditorPane~AssetsPane-DbXbUOzB.css">
+    <link rel="stylesheet" crossorigin href="/assets/EditorPane-LtAhEE17.css">
+    <link rel="stylesheet" crossorigin href="/assets/editor-body-fonts-BqnTZYHk.css">
+    <link rel="stylesheet" crossorigin href="/assets/mobile-edit-B_scFbcV.css">
+  <link rel="manifest" href="/manifest.webmanifest"></head>
+  <body>
+    <div id="mobile-editor-root">
+      <main id="mobile-editor-bootstrap" data-state="loading" role="status" aria-live="polite">
+        <section class="mobile-editor-bootstrap-card">
+          <div class="mobile-editor-bootstrap-spinner" aria-hidden="true"></div>
+          <h1 id="mobile-editor-bootstrap-title" class="mobile-editor-bootstrap-title">正在打开编辑器…</h1>
+          <p id="mobile-editor-bootstrap-detail" class="mobile-editor-bootstrap-detail">笔记内容是安全的，网络较慢时可能需要稍等片刻。</p>
+          <div class="mobile-editor-bootstrap-actions">
+            <button id="mobile-editor-bootstrap-back" class="mobile-editor-bootstrap-action" type="button">返回</button>
+            <button id="mobile-editor-bootstrap-retry" class="mobile-editor-bootstrap-action" data-primary="true" type="button" hidden>重试</button>
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

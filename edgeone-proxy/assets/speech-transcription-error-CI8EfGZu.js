@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";var t;function n(){return(n=e((()=>{t=class extends Error{platform;code=`speech_provider_direct_unreachable`;constructor(e){super(`The client could not reach the speech provider directly.`),this.platform=e,this.name=`SpeechProviderReachabilityError`}}})))()}export{n,t};

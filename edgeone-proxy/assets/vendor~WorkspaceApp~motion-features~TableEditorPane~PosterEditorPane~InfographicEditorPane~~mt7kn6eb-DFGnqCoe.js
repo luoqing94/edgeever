@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";function t(e,t){if(e?.inherit&&t){let{inherit:n,...r}=e;return{...t,...r}}return e}function n(){return(n=e((()=>{})))()}export{t as n,n as t};

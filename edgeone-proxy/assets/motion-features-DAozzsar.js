@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";import{o as t}from"./vendor~TableEditorPane~PosterEditorPane~InfographicEditorPane~EditorPane~DiagramEditorPane-B8miifE1.js";import{t as n}from"./vendor~motion-features-BysWk5Mk.js";var r;function i(){return(i=e((()=>{t(),r=n})))()}i();export{r as default};

@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";import{v as t}from"./vendor-react-FkrQ505E.js";import{n,t as r}from"./vendor-i18n-CVJwtjYC.js";import{r as i}from"./ui-button-UC0v93i7.js";import{c as a}from"./ui-button-tooltip-DPT6rCsj.js";var o;function s(){return(s=e((()=>{r(),i(),a(),t(),o=({onClick:e,className:t})=>{let{t:r}=n();return null}})))()}export{s as n,o as t};

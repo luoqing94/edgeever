@@ -1,0 +1,1 @@
+import{n as e}from"./rolldown-runtime-C0FnF6B9.js";import{Xn as t,Yn as n}from"./vendor-streamdown-DmUo3sTi.js";function r(e,t){e.accDescr&&t.setAccDescription?.(e.accDescr),e.accTitle&&t.setAccTitle?.(e.accTitle),e.title&&t.setDiagramTitle?.(e.title)}function i(){return(i=e((()=>{t(),n(r,`populateCommonDb`)})))()}export{r as n,i as t};
